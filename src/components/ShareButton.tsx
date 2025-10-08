@@ -6,9 +6,19 @@ import { type Coupon } from './CouponCard'
 export default function ShareButton({ coupon }: { coupon: Coupon }) {
   const [isOpen, setIsOpen] = useState(false)
 
-  const shareText = `Check out this coupon: ${coupon.title}! You can view it here: ${coupon.image_url}`
+  const [isCopied, setIsCopied] = useState(false)
+
+  const couponUrl = `${window.location.origin}/coupon/${coupon.id}`
+  const shareText = `Check out this coupon: ${coupon.title}! You can view it here: ${couponUrl}`
   const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(shareText)}`
   const emailUrl = `mailto:?subject=Check out this coupon: ${coupon.title}&body=${encodeURIComponent(shareText)}`
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(couponUrl).then(() => {
+      setIsCopied(true)
+      setTimeout(() => setIsCopied(false), 2000) // Reset after 2 seconds
+    })
+  }
 
   return (
     <div className="relative">
@@ -21,6 +31,12 @@ export default function ShareButton({ coupon }: { coupon: Coupon }) {
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+          <button
+            onClick={copyToClipboard}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+            {isCopied ? 'Copied!' : 'Copy Link'}
+          </button>
           <a
             href={whatsappUrl}
             target="_blank"

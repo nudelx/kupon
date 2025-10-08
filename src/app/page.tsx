@@ -13,11 +13,6 @@ export default async function Home() {
     return redirect('/login')
   }
 
-  const { data: coupons } = await supabase
-    .from('coupons')
-    .select('*')
-    .order('expires_at', { ascending: true });
-
   return (
     <div className="w-full max-w-4xl mx-auto py-8 px-4">
       <header className="flex justify-between items-center mb-8">
@@ -29,7 +24,7 @@ export default async function Home() {
       </header>
       <main>
         <AddCoupon />
-        <CouponList coupons={coupons ?? []} />
+        <CouponList />
       </main>
     </div>
   )

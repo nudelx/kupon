@@ -73,8 +73,12 @@ export default function AddCoupon() {
       setExpiresAt('')
       setFile(null)
       router.refresh()
-    } catch (e: any) {
-      setError(e.message || 'An unexpected error occurred.')
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message)
+      } else {
+        setError('An unexpected error occurred.')
+      }
     } finally {
       setLoading(false)
     }

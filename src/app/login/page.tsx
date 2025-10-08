@@ -10,8 +10,19 @@ export default function LoginPage() {
   const router = useRouter()
 
   useEffect(() => {
+    console.log("useEffect");
+    supabase.auth.getSession().then((...all) => {
+      console.log("all", all);
+      const { session } = all[0]
+      console.log("AAAAA", session);
+      if (session) {
+        router.push('/');
+      }
+    });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
+        console.log("session", session);
         router.push('/')
       }
     })
@@ -25,7 +36,7 @@ export default function LoginPage() {
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
-          providers={['google', 'github']}
+          providers={['google']}
           redirectTo="/"
         />
       </div>
