@@ -89,7 +89,7 @@ export const CouponList = ({ coupons, onEdit, onDelete, onToggleUsed, onShare }:
             <div className="card-body card-mobile">
               {/* Header */}
               <div className="flex items-start justify-between mb-3">
-                <h2 className="card-title text-lg font-semibold text-warm line-clamp-2">
+                <h2 className="card-title text-lg font-semibold text-base-content line-clamp-2">
                   {coupon.title}
                 </h2>
                 <div className={`badge ${expiration.className} ml-2 flex-shrink-0`}>
@@ -99,7 +99,7 @@ export const CouponList = ({ coupons, onEdit, onDelete, onToggleUsed, onShare }:
               
               {/* Description */}
               {coupon.description ? (
-                <p className="text-warm-muted text-sm mb-4 line-clamp-3">
+                <p className="text-base-content/80 text-sm mb-4 line-clamp-3">
                   {coupon.description}
                 </p>
               ) : null}

@@ -70,8 +70,8 @@ export const GroupSidebar = () => {
 
   return (
     <div className="sidebar-friendly w-64 min-h-full">
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-warm">Navigation</h2>
+      <div className="p-4 border-b border-base-300">
+        <h2 className="text-lg font-semibold text-base-content">Navigation</h2>
       </div>
       
       {message ? (
@@ -116,13 +116,13 @@ export const GroupSidebar = () => {
         </li>
         
         <li className="menu-title">
-          <span className="text-warm-muted font-medium">Groups</span>
+          <span className="text-base-content/70 font-medium">Groups</span>
         </li>
         
         {isLoading ? (
           <li className="p-4">
             <span className="loading loading-spinner loading-sm"></span>
-            <span className="ml-2 text-sm text-warm-muted">Loading groups…</span>
+            <span className="ml-2 text-sm text-base-content/70">Loading groups…</span>
           </li>
         ) : null}
         
@@ -138,11 +138,11 @@ export const GroupSidebar = () => {
         ))}
         
         {groups?.length === 0 && !isLoading ? (
-          <li className="p-4 text-sm text-warm-muted">No groups yet.</li>
+          <li className="p-4 text-sm text-base-content/70">No groups yet.</li>
         ) : null}
         
         <li className="menu-title">
-          <span className="text-warm-muted font-medium">Actions</span>
+          <span className="text-base-content/70 font-medium">Actions</span>
         </li>
         
         <li>

@@ -91,7 +91,7 @@ export const DashboardPage = () => {
       <section className="mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1">
-            <h1 className="text-2xl sm:text-3xl font-bold text-warm mb-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-base-content mb-2">
               {isLoadingGroups ? (
                 <div className="flex items-center gap-2">
                   <span className="loading loading-spinner loading-sm"></span>
@@ -101,7 +101,7 @@ export const DashboardPage = () => {
                 activeGroup ? activeGroup.name : 'Personal coupons'
               )}
             </h1>
-            <p className="text-warm-muted text-sm sm:text-base leading-relaxed">
+            <p className="text-base-content/70 text-sm sm:text-base leading-relaxed">
               {activeGroup
                 ? 'Coupons shared with this group update instantly for every member.'
                 : 'Keep your personal coupons handy or assign them to a group for sharing.'}
@@ -161,7 +161,7 @@ export const DashboardPage = () => {
       {/* Floating Action Button for Mobile */}
       <button 
         onClick={handleOpenModal}
-        className="fab btn btn-primary btn-circle btn-lg sm:hidden"
+        className="fab btn btn-primary btn-circle btn-lg sm:hidden items-center justify-center"
         aria-label="Add new coupon"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

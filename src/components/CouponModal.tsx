@@ -131,10 +131,10 @@ export const CouponModal = ({
 
   return (
     <div className="modal modal-open">
-      <div className="modal-box w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto bg-white border border-gray-200 shadow-soft-lg">
+      <div className="modal-box w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto bg-base-100 border border-base-300 shadow-soft-lg">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-warm flex items-center gap-2">
+          <h3 className="text-xl font-bold text-base-content flex items-center gap-2">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
@@ -189,7 +189,7 @@ export const CouponModal = ({
           </div>
 
           {/* Description */}
-          <div className="form-control w-full">
+          <div className="form-control w-full flex flex-col gap-2">
             <label className="label">
               <span className="label-text font-medium">Description</span>
             </label>
