@@ -2,6 +2,7 @@ import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react';
 import type { GroupRecord } from '@/features/groups/api';
 import { uploadCouponImage } from '@/lib/storage';
 import { useAuth } from '@/features/auth/useAuth';
+import { ImagePreview } from '@/components/ui';
 import type { CouponPayload, CouponRecord } from '@/features/coupons/types';
 
 export type CouponModalProps = {
@@ -36,6 +37,7 @@ export const CouponModal = ({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<{ url: string; alt: string } | null>(null);
 
   const mode = initialCoupon ? 'edit' : 'create';
 
@@ -124,12 +126,22 @@ export const CouponModal = ({
     setImageFile(null);
     setError(null);
     setSuccess(null);
+    setPreviewImage(null);
     onClose();
+  };
+
+  const handleImagePreview = (imageUrl: string, alt: string) => {
+    setPreviewImage({ url: imageUrl, alt });
+  };
+
+  const closePreview = () => {
+    setPreviewImage(null);
   };
 
   if (!isOpen) return null;
 
   return (
+    <>
     <div className="modal modal-open">
       <div className="modal-box w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto bg-base-100 border border-base-300 shadow-soft-lg">
         {/* Header */}
@@ -257,23 +269,35 @@ export const CouponModal = ({
               accept="image/*" 
               onChange={handleFileChange} 
             />
-            {imageFile ? (
-              <div className="mt-4">
-                <img 
-                  src={URL.createObjectURL(imageFile)} 
-                  alt="Coupon preview" 
-                  className="w-full h-32 object-cover rounded-lg border border-base-300" 
-                />
-              </div>
-            ) : initialCoupon?.image_url ? (
-              <div className="mt-4">
-                <img 
-                  src={initialCoupon.image_url} 
-                  alt="Coupon image" 
-                  className="w-full h-32 object-cover rounded-lg border border-base-300" 
-                />
-              </div>
-            ) : null}
+             {imageFile ? (
+               <div className="mt-4 relative">
+                 <img 
+                   src={URL.createObjectURL(imageFile)} 
+                   alt="Coupon preview" 
+                   className="w-full h-32 object-cover rounded-lg border border-base-300 cursor-pointer hover:opacity-90 transition-opacity duration-200" 
+                   onClick={() => handleImagePreview(URL.createObjectURL(imageFile), 'Coupon preview')}
+                 />
+                 <div className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full transition-colors duration-200">
+                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                   </svg>
+                 </div>
+               </div>
+             ) : initialCoupon?.image_url ? (
+               <div className="mt-4 relative">
+                 <img 
+                   src={initialCoupon.image_url} 
+                   alt="Coupon image" 
+                   className="w-full h-32 object-cover rounded-lg border border-base-300 cursor-pointer hover:opacity-90 transition-opacity duration-200" 
+                   onClick={() => handleImagePreview(initialCoupon.image_url!, 'Coupon image')}
+                 />
+                 <div className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full transition-colors duration-200">
+                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                   </svg>
+                 </div>
+               </div>
+             ) : null}
           </div>
 
           {/* Actions */}
@@ -306,9 +330,20 @@ export const CouponModal = ({
               )}
             </button>
           </div>
-        </form>
-      </div>
-      <div className="modal-backdrop" onClick={handleClose}></div>
-    </div>
-  );
-};
+         </form>
+       </div>
+       <div className="modal-backdrop" onClick={handleClose}></div>
+     </div>
+     
+     {/* Image Preview Modal */}
+     {previewImage && (
+       <ImagePreview
+         isOpen={!!previewImage}
+         onClose={closePreview}
+         imageUrl={previewImage.url}
+         alt={previewImage.alt}
+       />
+     )}
+   </>
+   );
+ };

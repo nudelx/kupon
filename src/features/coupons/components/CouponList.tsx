@@ -1,5 +1,7 @@
 import { format, isBefore, isWithinInterval, parseISO } from 'date-fns';
+import { useState } from 'react';
 import type { CouponRecord } from '../types';
+import { ImagePreview } from '@/components/ui';
 
 export type CouponListProps = {
   coupons: CouponRecord[];
@@ -34,6 +36,16 @@ const resolveExpirationLabel = (expirationDate: string | null) => {
 };
 
 export const CouponList = ({ coupons, onEdit, onDelete, onToggleUsed, onShare }: CouponListProps) => {
+  const [previewImage, setPreviewImage] = useState<{ url: string; alt: string } | null>(null);
+
+  const handleImageClick = (imageUrl: string, title: string) => {
+    setPreviewImage({ url: imageUrl, alt: title });
+  };
+
+  const closePreview = () => {
+    setPreviewImage(null);
+  };
+
   if (!coupons.length) {
     return (
       <div className="text-center py-12 px-4">
@@ -62,116 +74,135 @@ export const CouponList = ({ coupons, onEdit, onDelete, onToggleUsed, onShare }:
   };
 
   return (
-    <div className="grid-mobile">
-      {coupons.map((coupon) => {
-        const expiration = resolveExpirationLabel(coupon.expiration_date);
-        return (
-          <div 
-            key={coupon.id} 
-            className={`card-friendly hover:shadow-soft-lg transition-shadow duration-200 ${coupon.is_used ? 'opacity-60' : ''}`}
-          >
-            {/* Image */}
-            {coupon.image_url ? (
-              <figure className="relative">
-                <img 
-                  src={coupon.image_url} 
-                  alt={coupon.title} 
-                  className="w-full h-48 object-cover"
-                />
-                {coupon.is_used && (
-                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">USED</span>
+    <>
+      <div className="grid-mobile">
+        {coupons.map((coupon) => {
+          const expiration = resolveExpirationLabel(coupon.expiration_date);
+          return (
+            <div 
+              key={coupon.id} 
+              className={`card-friendly hover:shadow-soft-lg transition-shadow duration-200 ${coupon.is_used ? 'opacity-60' : ''}`}
+            >
+              {/* Image */}
+              {coupon.image_url ? (
+                <figure className="relative">
+                  <img 
+                    src={coupon.image_url} 
+                    alt={coupon.title} 
+                    className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity duration-200"
+                    onClick={() => handleImageClick(coupon.image_url!, coupon.title)}
+                  />
+                  {coupon.is_used && (
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">USED</span>
+                    </div>
+                  )}
+                  {/* Preview icon overlay */}
+                  <div className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full transition-colors duration-200">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                    </svg>
                   </div>
-                )}
-              </figure>
-            ) : null}
-            
-            <div className="card-body card-mobile">
-              {/* Header */}
-              <div className="flex items-start justify-between mb-3">
-                <h2 className="card-title text-lg font-semibold text-base-content line-clamp-2">
-                  {coupon.title}
-                </h2>
-                <div className={`badge ${expiration.className} ml-2 flex-shrink-0`}>
-                  {expiration.label}
-                </div>
-              </div>
-              
-              {/* Description */}
-              {coupon.description ? (
-                <p className="text-base-content/80 text-sm mb-4 line-clamp-3">
-                  {coupon.description}
-                </p>
+                </figure>
               ) : null}
               
-              {/* Coupon Code */}
-              {coupon.code_text ? (
-                <div className="relative mb-4">
-                  <div className="mockup-code text-sm">
-                    <pre className="p-2"><code className="text-primary font-mono">{coupon.code_text}</code></pre>
+              <div className="card-body card-mobile">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-3">
+                  <h2 className="card-title text-lg font-semibold text-base-content line-clamp-2">
+                    {coupon.title}
+                  </h2>
+                  <div className={`badge ${expiration.className} ml-2 flex-shrink-0`}>
+                    {expiration.label}
                   </div>
-                  <button
-                    className="btn btn-ghost btn-sm absolute top-1 right-1 touch-target"
-                    onClick={() => navigator.clipboard.writeText(coupon.code_text!)}
-                    aria-label="Copy code"
+                </div>
+                
+                {/* Description */}
+                {coupon.description ? (
+                  <p className="text-base-content/80 text-sm mb-4 line-clamp-3">
+                    {coupon.description}
+                  </p>
+                ) : null}
+                
+                {/* Coupon Code */}
+                {coupon.code_text ? (
+                  <div className="relative mb-4">
+                    <div className="mockup-code text-sm">
+                      <pre className="p-2"><code className="text-primary font-mono">{coupon.code_text}</code></pre>
+                    </div>
+                    <button
+                      className="btn btn-ghost btn-sm absolute top-1 right-1 touch-target"
+                      onClick={() => navigator.clipboard.writeText(coupon.code_text!)}
+                      aria-label="Copy code"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                  </div>
+                ) : null}
+                
+                {/* Actions */}
+                <div className="card-actions justify-end gap-2 flex-wrap">
+                  <button 
+                    type="button" 
+                    onClick={() => onToggleUsed(coupon)} 
+                    className={`btn btn-sm ${coupon.is_used ? 'btn-warning' : 'btn-success'}`}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
+                    {coupon.is_used ? 'Mark unused' : 'Mark used'}
+                  </button>
+                  
+                  <button 
+                    type="button" 
+                    onClick={() => onEdit(coupon)} 
+                    className="btn btn-sm btn-ghost"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                  </button>
+                  
+                  <button 
+                    type="button" 
+                    onClick={() => handleShare(coupon)} 
+                    className="btn btn-sm btn-ghost"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                    </svg>
+                    Share
+                  </button>
+                  
+                  <button 
+                    type="button" 
+                    onClick={() => onDelete(coupon)} 
+                    className="btn btn-sm btn-ghost text-error hover:bg-error hover:text-error-content"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Remove
                   </button>
                 </div>
-              ) : null}
-              
-              {/* Actions */}
-              <div className="card-actions justify-end gap-2 flex-wrap">
-                <button 
-                  type="button" 
-                  onClick={() => onToggleUsed(coupon)} 
-                  className={`btn btn-sm ${coupon.is_used ? 'btn-warning' : 'btn-success'}`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  {coupon.is_used ? 'Mark unused' : 'Mark used'}
-                </button>
-                
-                <button 
-                  type="button" 
-                  onClick={() => onEdit(coupon)} 
-                  className="btn btn-sm btn-ghost"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Edit
-                </button>
-                
-                <button 
-                  type="button" 
-                  onClick={() => handleShare(coupon)} 
-                  className="btn btn-sm btn-ghost"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                  </svg>
-                  Share
-                </button>
-                
-                <button 
-                  type="button" 
-                  onClick={() => onDelete(coupon)} 
-                  className="btn btn-sm btn-ghost text-error hover:bg-error hover:text-error-content"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  Remove
-                </button>
               </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
+           );
+         })}
+      </div>
+      
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <ImagePreview
+          isOpen={!!previewImage}
+          onClose={closePreview}
+          imageUrl={previewImage.url}
+          alt={previewImage.alt}
+        />
+      )}
+    </>
   );
 };
