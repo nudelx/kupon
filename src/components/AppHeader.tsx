@@ -51,7 +51,7 @@ export const AppHeader = () => {
         {user ? (
           <div className="dropdown dropdown-end">
             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar touch-target">
-              <div className="w-10 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
+              <div className="w-8 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
                 <img alt={user.email} src={(user as UserWithAvatar).avatar_url ?? `https://ui-avatars.com/api/?name=${user.email}&background=random`} />
               </div>
             </div>
@@ -67,7 +67,7 @@ export const AppHeader = () => {
             </ul>
           </div>
         ) : (
-          <div className="skeleton w-10 h-10 rounded-full"></div>
+          <div className="skeleton w-10 h-10 rounded-full"/>
         )}
       </div>
     </div>
