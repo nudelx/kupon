@@ -6,13 +6,17 @@ import { GroupSidebar } from '@/features/groups/components/GroupSidebar';
 export const RootLayout = () => {
   return (
     <AuthGate>
-      <div className="app-shell">
+      <div className="bg-base-100 text-base-content min-h-screen" data-theme="dark">
         <AppHeader />
-        <div className="app-shell__body">
-          <GroupSidebar />
-          <main className="app-shell__content">
+        <div className="drawer lg:drawer-open">
+          <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
+          <div className="drawer-content flex flex-col items-center justify-center">
             <Outlet />
-          </main>
+          </div>
+          <div className="drawer-side">
+            <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
+            <GroupSidebar />
+          </div>
         </div>
       </div>
     </AuthGate>

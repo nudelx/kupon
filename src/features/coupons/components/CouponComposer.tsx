@@ -113,73 +113,93 @@ export const CouponComposer = ({
   };
 
   return (
-    <section className="card">
-      <header className="card__header">
-        <h2>{mode === 'create' ? 'Add new coupon' : 'Edit coupon'}</h2>
+    <div className="card bg-base-100 shadow-xl">
+      <div className="card-body">
+        <h2 className="card-title">{mode === 'create' ? 'Add new coupon' : 'Edit coupon'}</h2>
         {mode === 'edit' && onCancelEdit ? (
-          <button type="button" className="text-button" onClick={onCancelEdit}>
+          <button type="button" className="btn btn-sm btn-ghost absolute top-4 right-4" onClick={onCancelEdit}>
             Cancel
           </button>
         ) : null}
-      </header>
-      <form className="coupon-form" onSubmit={handleSubmit}>
-        <label>
-          Title
-          <input
-            value={formState.title}
-            onChange={(event) => setFormState((state) => ({ ...state, title: event.target.value }))}
-            placeholder="e.g. Grocery store coupon"
-            required
-          />
-        </label>
-        <label>
-          Description
-          <textarea
-            value={formState.description}
-            onChange={(event) => setFormState((state) => ({ ...state, description: event.target.value }))}
-            placeholder="Add any details for the family…"
-            rows={3}
-          />
-        </label>
-        <label>
-          Coupon text / code
-          <input
-            value={formState.codeText}
-            onChange={(event) => setFormState((state) => ({ ...state, codeText: event.target.value }))}
-            placeholder="Optional code"
-          />
-        </label>
-        <label>
-          Expiration date
-          <input
-            type="date"
-            value={formState.expirationDate}
-            onChange={(event) => setFormState((state) => ({ ...state, expirationDate: event.target.value }))}
-          />
-        </label>
-        <label>
-          Share with
-          <select
-            value={formState.groupId}
-            onChange={(event) => setFormState((state) => ({ ...state, groupId: event.target.value }))}
-          >
-            {availableGroups.map((group) => (
-              <option key={group.id} value={group.id}>
-                {group.id === 'personal' ? 'Personal list' : group.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Image (optional)
-          <input type="file" accept="image/*" onChange={handleFileChange} />
-        </label>
-        <button type="submit" disabled={isSaving}>
-          {isSaving ? 'Saving…' : mode === 'create' ? 'Add coupon' : 'Update coupon'}
-        </button>
-        {success ? <p className="feedback success">{success}</p> : null}
-        {error ? <p className="feedback error">{error}</p> : null}
-      </form>
-    </section>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <label className="form-control w-full">
+            <div className="label">
+              <span className="label-text">Title</span>
+            </div>
+            <input
+              type="text"
+              placeholder="e.g. Grocery store coupon"
+              className="input input-bordered w-full"
+              value={formState.title}
+              onChange={(event) => setFormState((state) => ({ ...state, title: event.target.value }))}
+              required
+            />
+          </label>
+          <label className="form-control w-full">
+            <div className="label">
+              <span className="label-text">Description</span>
+            </div>
+            <textarea
+              className="textarea textarea-bordered h-24"
+              placeholder="Add any details for the family…"
+              value={formState.description}
+              onChange={(event) => setFormState((state) => ({ ...state, description: event.target.value }))}
+            ></textarea>
+          </label>
+          <label className="form-control w-full">
+            <div className="label">
+              <span className="label-text">Coupon text / code</span>
+            </div>
+            <input
+              type="text"
+              placeholder="Optional code"
+              className="input input-bordered w-full"
+              value={formState.codeText}
+              onChange={(event) => setFormState((state) => ({ ...state, codeText: event.target.value }))}
+            />
+          </label>
+          <label className="form-control w-full">
+            <div className="label">
+              <span className="label-text">Expiration date</span>
+            </div>
+            <input
+              type="date"
+              className="input input-bordered w-full"
+              value={formState.expirationDate}
+              onChange={(event) => setFormState((state) => ({ ...state, expirationDate: event.target.value }))}
+            />
+          </label>
+          <label className="form-control w-full">
+            <div className="label">
+              <span className="label-text">Share with</span>
+            </div>
+            <select
+              className="select select-bordered"
+              value={formState.groupId}
+              onChange={(event) => setFormState((state) => ({ ...state, groupId: event.target.value }))}
+            >
+              {availableGroups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.id === 'personal' ? 'Personal list' : group.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="form-control w-full">
+            <div className="label">
+              <span className="label-text">Image (optional)</span>
+            </div>
+            <input type="file" className="file-input file-input-bordered w-full" accept="image/*" onChange={handleFileChange} />
+          </label>
+          <div className="card-actions justify-end">
+            <button type="submit" className="btn btn-primary" disabled={isSaving}>
+              {isSaving ? 'Saving…' : mode === 'create' ? 'Add coupon' : 'Update coupon'}
+            </button>
+          </div>
+          {success ? <div role="alert" className="alert alert-success"><p>{success}</p></div> : null}
+          {error ? <div role="alert" className="alert alert-error"><p>{error}</p></div> : null}
+        </form>
+      </div>
+    </div>
   );
 };

@@ -20,22 +20,29 @@ export const SharedCouponPage = () => {
 
   if (isLoading) {
     return (
-      <div className="centered">
-        <p>Loading coupon…</p>
+      <div className="hero min-h-screen bg-base-200">
+        <div className="hero-content text-center">
+          <div className="max-w-md">
+            <span className="loading loading-lg"></span>
+            <p>Loading coupon…</p>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (isError || !coupon) {
     return (
-      <div className="centered">
-        <section className="card">
-          <h2>Coupon not found</h2>
-          <p>This share link might be expired or the coupon was removed.</p>
-          <button type="button" onClick={goHome} className="ghost">
-            Go to app
-          </button>
-        </section>
+      <div className="hero min-h-screen bg-base-200">
+        <div className="hero-content text-center">
+          <div className="max-w-md">
+            <h1 className="text-5xl font-bold">Coupon not found</h1>
+            <p className="py-6">This share link might be expired or the coupon was removed.</p>
+            <button type="button" onClick={goHome} className="btn btn-primary">
+              Go to app
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -60,27 +67,31 @@ export const SharedCouponPage = () => {
   };
 
   return (
-    <div className="shared-coupon">
-      <section className="card">
-        <header className="card__header">
-          <h1>{coupon.title}</h1>
-          <span className="badge">Shared with you</span>
-        </header>
-        {coupon.image_url ? (
-          <img src={coupon.image_url} alt={coupon.title} className="shared-coupon__image" />
-        ) : null}
-        {coupon.description ? <p>{coupon.description}</p> : null}
-        {coupon.code_text ? <code className="coupon-code">{coupon.code_text}</code> : null}
-        <p className="muted">Expiration: {expiration}</p>
-        <footer className="shared-coupon__actions">
-          <button type="button" className="ghost" onClick={handleShare}>
-            Share onwards
-          </button>
-          <button type="button" className="ghost" onClick={goHome}>
-            Open Kupon
-          </button>
-        </footer>
-      </section>
+    <div className="hero min-h-screen bg-base-200">
+      <div className="hero-content">
+        <div className="card w-full max-w-lg shadow-2xl bg-base-100">
+          <div className="card-body">
+            <div className="card-title">
+              <h1>{coupon.title}</h1>
+              <div className="badge badge-secondary">Shared with you</div>
+            </div>
+            {coupon.image_url ? (
+              <figure className="my-4"><img src={coupon.image_url} alt={coupon.title} className="rounded-xl" /></figure>
+            ) : null}
+            {coupon.description ? <p>{coupon.description}</p> : null}
+            {coupon.code_text ? <div className="mockup-code my-4"><pre><code>{coupon.code_text}</code></pre></div> : null}
+            <p className="text-sm text-base-content/70">Expiration: {expiration}</p>
+            <div className="card-actions justify-end mt-4">
+              <button type="button" className="btn btn-outline" onClick={handleShare}>
+                Share onwards
+              </button>
+              <button type="button" className="btn btn-primary" onClick={goHome}>
+                Open Kupon
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

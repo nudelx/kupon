@@ -3,11 +3,10 @@ import { NavLink, useParams } from 'react-router-dom';
 import { useGroups, useCreateGroup, useJoinGroup, useLeaveGroup } from '../hooks/useGroups';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-  isActive ? 'sidebar-link active' : 'sidebar-link';
+  isActive ? 'active' : '';
 
 export const GroupSidebar = () => {
   const { data: groups, isLoading } = useGroups();
-  console.log("groups", groups);
   const createGroupMutation = useCreateGroup();
   const joinGroupMutation = useJoinGroup();
   const leaveGroupMutation = useLeaveGroup();
@@ -67,64 +66,59 @@ export const GroupSidebar = () => {
   };
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-section">
+    <ul className="menu bg-base-200 w-56 min-h-full">
+      <li>
         <NavLink to="/" className={navLinkClass} end>
           All coupons
         </NavLink>
-      </div>
-      <div className="sidebar-section">
-        <h2>Groups</h2>
-        {isLoading ? <p className="muted">Loading groups…</p> : null}
-        <div className="sidebar-groups">
-          {groups?.map((group) => (
-            <div key={group.id} className={groupId === group.id ? 'group-tile active' : 'group-tile'}>
-              <NavLink to={`/groups/${group.id}`} className="group-tile__link">
-                <span>{group.name}</span>
-                <small>Code: {group.join_code}</small>
-              </NavLink>
-              <button
-                type="button"
-                className="text-button"
-                onClick={() => handleLeaveGroup(group.id, group.name)}
-              >
-                Leave
-              </button>
-            </div>
-          ))}
-          {groups?.length === 0 && !isLoading ? <p className="muted">No groups yet.</p> : null}
-        </div>
-      </div>
-      <div className="sidebar-section">
-        <form onSubmit={handleCreateGroup} className="sidebar-form">
-          <h3>Create group</h3>
-          <input
-            value={newGroupName}
-            onChange={(event) => setNewGroupName(event.target.value)}
-            placeholder="Family name"
-            aria-label="Group name"
-          />
-          <button type="submit" disabled={createGroupMutation.isPending}>
-            {createGroupMutation.isPending ? 'Creating…' : 'Create'}
-          </button>
-        </form>
-      </div>
-      <div className="sidebar-section">
-        <form onSubmit={handleJoinGroup} className="sidebar-form">
-          <h3>Join group</h3>
-          <input
-            value={joinCode}
-            onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
-            placeholder="Enter code"
-            aria-label="Join code"
-          />
-          <button type="submit" disabled={joinGroupMutation.isPending}>
-            {joinGroupMutation.isPending ? 'Joining…' : 'Join'}
-          </button>
-        </form>
-      </div>
-      {message ? <p className="feedback success">{message}</p> : null}
-      {error ? <p className="feedback error">{error}</p> : null}
-    </aside>
+      </li>
+      <li className="menu-title">Groups</li>
+      {isLoading ? <p className="p-4">Loading groups…</p> : null}
+      {groups?.map((group) => (
+        <li key={group.id}>
+          <NavLink to={`/groups/${group.id}`} className={navLinkClass}>
+            {group.name}
+          </NavLink>
+        </li>
+      ))}
+      {groups?.length === 0 && !isLoading ? <p className="p-4">No groups yet.</p> : null}
+      <li className="menu-title">Actions</li>
+      <li>
+        <details open>
+          <summary>Create group</summary>
+          <form onSubmit={handleCreateGroup} className="p-2 bg-base-100">
+            <input
+              type="text"
+              placeholder="Group name"
+              className="input input-bordered w-full max-w-xs"
+              value={newGroupName}
+              onChange={(event) => setNewGroupName(event.target.value)}
+            />
+            <button type="submit" className="btn btn-primary btn-sm mt-2" disabled={createGroupMutation.isPending}>
+              {createGroupMutation.isPending ? 'Creating…' : 'Create'}
+            </button>
+          </form>
+        </details>
+      </li>
+      <li>
+        <details open>
+          <summary>Join group</summary>
+          <form onSubmit={handleJoinGroup} className="p-2 bg-base-100">
+            <input
+              type="text"
+              placeholder="Join code"
+              className="input input-bordered w-full max-w-xs"
+              value={joinCode}
+              onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
+            />
+            <button type="submit" className="btn btn-primary btn-sm mt-2" disabled={joinGroupMutation.isPending}>
+              {joinGroupMutation.isPending ? 'Joining…' : 'Join'}
+            </button>
+          </form>
+        </details>
+      </li>
+      {message ? <div role="alert" className="alert alert-success"><p>{message}</p></div> : null}
+      {error ? <div role="alert" className="alert alert-error"><p>{error}</p></div> : null}
+    </ul>
   );
 };

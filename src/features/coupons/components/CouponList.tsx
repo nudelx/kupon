@@ -11,14 +11,14 @@ export type CouponListProps = {
 
 const resolveExpirationLabel = (expirationDate: string | null) => {
   if (!expirationDate) {
-    return { label: 'No expiration date', tone: 'muted' as const };
+    return { label: 'No expiration date', className: 'badge-neutral' };
   }
 
   const date = parseISO(expirationDate);
   const now = new Date();
 
   if (isBefore(date, now)) {
-    return { label: `Expired ${format(date, 'MMM d, yyyy')}`, tone: 'danger' as const };
+    return { label: `Expired ${format(date, 'MMM d, yyyy')}`, className: 'badge-error' };
   }
 
   if (
@@ -27,18 +27,18 @@ const resolveExpirationLabel = (expirationDate: string | null) => {
       end: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
     })
   ) {
-    return { label: `Expires soon (${format(date, 'MMM d')})`, tone: 'warning' as const };
+    return { label: `Expires soon (${format(date, 'MMM d')})`, className: 'badge-warning' };
   }
 
-  return { label: `Expires ${format(date, 'MMM d, yyyy')}`, tone: 'success' as const };
+  return { label: `Expires ${format(date, 'MMM d, yyyy')}`, className: 'badge-success' };
 };
 
 export const CouponList = ({ coupons, onEdit, onDelete, onToggleUsed, onShare }: CouponListProps) => {
   if (!coupons.length) {
     return (
-      <div className="empty-state">
-        <h2>No coupons yet</h2>
-        <p>Add your first coupon or claim a group code to see shared deals.</p>
+      <div className="text-center p-8">
+        <h2 className="text-xl font-semibold">No coupons yet</h2>
+        <p className="text-base-content/70">Add your first coupon or claim a group code to see shared deals.</p>
       </div>
     );
   }
@@ -61,41 +61,41 @@ export const CouponList = ({ coupons, onEdit, onDelete, onToggleUsed, onShare }:
   };
 
   return (
-    <div className="coupon-grid">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {coupons.map((coupon) => {
         const expiration = resolveExpirationLabel(coupon.expiration_date);
         return (
-          <article key={coupon.id} className={coupon.is_used ? 'coupon-card used' : 'coupon-card'}>
+          <div key={coupon.id} className={`card bg-base-200 shadow-xl ${coupon.is_used ? 'opacity-50' : ''}`}>
             {coupon.image_url ? (
-              <img src={coupon.image_url} alt={coupon.title} className="coupon-card__image" />
+              <figure><img src={coupon.image_url} alt={coupon.title} /></figure>
             ) : null}
-            <div className="coupon-card__content">
-              <header>
-                <h3>{coupon.title}</h3>
-                <span className={`badge ${expiration.tone}`}>{expiration.label}</span>
-              </header>
+            <div className="card-body">
+              <h2 className="card-title">
+                {coupon.title}
+                <div className={`badge ${expiration.className}`}>{expiration.label}</div>
+              </h2>
               {coupon.description ? <p>{coupon.description}</p> : null}
               {coupon.code_text ? (
-                <code className="coupon-code" aria-label="Coupon code">
-                  {coupon.code_text}
-                </code>
+                <div className="mockup-code">
+                  <pre><code>{coupon.code_text}</code></pre>
+                </div>
               ) : null}
-              <footer className="coupon-card__actions">
-                <button type="button" onClick={() => onToggleUsed(coupon)} className="ghost">
+              <div className="card-actions justify-end">
+                <button type="button" onClick={() => onToggleUsed(coupon)} className="btn btn-ghost btn-sm">
                   {coupon.is_used ? 'Mark unused' : 'Mark used'}
                 </button>
-                <button type="button" onClick={() => onEdit(coupon)} className="ghost">
+                <button type="button" onClick={() => onEdit(coupon)} className="btn btn-ghost btn-sm">
                   Edit
                 </button>
-                <button type="button" onClick={() => onDelete(coupon)} className="ghost danger">
+                <button type="button" onClick={() => onDelete(coupon)} className="btn btn-ghost btn-sm text-error">
                   Remove
                 </button>
-                <button type="button" onClick={() => handleShare(coupon)} className="ghost">
+                <button type="button" onClick={() => handleShare(coupon)} className="btn btn-ghost btn-sm">
                   Share link
                 </button>
-              </footer>
+              </div>
             </div>
-          </article>
+          </div>
         );
       })}
     </div>

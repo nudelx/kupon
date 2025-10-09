@@ -45,73 +45,55 @@ export const SignInPanel = ({ hasRequestedLink, onRequestComplete }: SignInPanel
   };
 
   return (
-    <div className="auth-panel">
-      <div className="auth-panel__brand">
-        <span className="auth-panel__logo" aria-hidden="true">
-          🎟️
-        </span>
-        <div>
-          <h1>Welcome back</h1>
-          <p className="auth-panel__subtitle">Keep every family coupon in one live, shareable place.</p>
+    <div className="hero min-h-screen bg-base-200">
+      <div className="hero-content flex-col lg:flex-row-reverse">
+        <div className="text-center lg:text-left">
+          <h1 className="text-5xl font-bold">Welcome back!</h1>
+          <p className="py-6">Keep every family coupon in one live, shareable place.</p>
         </div>
-      </div>
-
-      <div className="auth-panel__body">
-        <button
-          type="button"
-          className="oauth-button"
-          onClick={handleGoogleSignIn}
-          disabled={isGoogleRedirecting}
-        >
-          <span className="oauth-icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M17.64 9.2045C17.64 8.56636 17.5827 7.95272 17.4764 7.36363H9V10.8486H13.8436C13.635 11.9736 13.005 12.9236 12.0541 13.5581V15.8209H14.9564C16.6582 14.2527 17.64 11.9454 17.64 9.2045Z"
-                fill="#4285F4"
-              />
-              <path
-                d="M9 18C11.43 18 13.4673 17.1945 14.9564 15.8209L12.0541 13.5581C11.2486 14.0981 10.2118 14.4209 9 14.4209C6.6555 14.4209 4.67182 12.8381 3.96455 10.71H0.957275V13.0481C2.43818 15.9836 5.48182 18 9 18Z"
-                fill="#34A853"
-              />
-              <path
-                d="M3.96455 10.71C3.78455 10.17 3.68182 9.59364 3.68182 9C3.68182 8.40636 3.78455 7.83 3.96455 7.29V4.95182H0.957275C0.347727 6.17182 0 7.54773 0 9C0 10.4523 0.347727 11.8282 0.957275 13.0481L3.96455 10.71Z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M9 3.57909C10.32 3.57909 11.5082 4.03364 12.4459 4.92727L15.0218 2.35136C13.4627 0.891818 11.4255 0 9 0C5.48182 0 2.43818 2.01636 0.957275 4.95182L3.96455 7.29C4.67182 5.16182 6.6555 3.57909 9 3.57909Z"
-                fill="#EA4335"
-              />
-            </svg>
-          </span>
-          {isGoogleRedirecting ? 'Redirecting…' : 'Continue with Google'}
-        </button>
-
-        <div className="divider">
-          <span>Prefer email?</span>
+        <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+          <div className="card-body">
+            <button
+              type="button"
+              className="btn btn-outline"
+              onClick={handleGoogleSignIn}
+              disabled={isGoogleRedirecting}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 48 48">
+                <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C44.902,35.126,48,30.028,48,24C48,22.659,47.862,21.35,47.611,20.083z"></path>
+              </svg>
+              {isGoogleRedirecting ? 'Redirecting…' : 'Continue with Google'}
+            </button>
+            <div className="divider">OR</div>
+            <form onSubmit={handleSubmit}>
+              <label className="form-control w-full">
+                <div className="label">
+                  <span className="label-text">Email</span>
+                </div>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  className="input input-bordered w-full"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  autoComplete="email"
+                  required
+                />
+              </label>
+              <div className="form-control mt-6">
+                <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                  {isSubmitting ? 'Sending link…' : 'Send me a magic link'}
+                </button>
+              </div>
+              {error ? <div role="alert" className="alert alert-error mt-4"><p>{error}</p></div> : null}
+              {hasRequestedLink ? (
+                <div role="alert" className="alert alert-success mt-4">
+                  <p>Magic link sent! Check your inbox and open it on any device to jump back into Kupon.</p>
+                </div>
+              ) : null}
+            </form>
+          </div>
         </div>
-
-        <form onSubmit={handleSubmit} className="auth-form">
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="you@example.com"
-            autoComplete="email"
-            required
-          />
-          <button type="submit" className="primary-button" disabled={isSubmitting}>
-            {isSubmitting ? 'Sending link…' : 'Send me a magic link'}
-          </button>
-          {error ? <p className="form-error">{error}</p> : null}
-          {hasRequestedLink ? (
-            <p className="form-helper">
-              Magic link sent! Check your inbox and open it on any device to jump back into Kupon.
-            </p>
-          ) : null}
-        </form>
       </div>
     </div>
   );

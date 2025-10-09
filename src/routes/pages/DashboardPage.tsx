@@ -69,11 +69,11 @@ export const DashboardPage = () => {
   const isSaving = editingCoupon ? updateCouponMutation.isPending : createCouponMutation.isPending;
 
   return (
-    <div className="dashboard">
-      <section className="page-heading">
+    <div className="container mx-auto p-4">
+      <section className="flex justify-between items-center mb-4">
         <div>
-          <h1>{activeGroup ? activeGroup.name : 'Personal coupons'}</h1>
-          <p>
+          <h1 className="text-2xl font-bold">{activeGroup ? activeGroup.name : 'Personal coupons'}</h1>
+          <p className="text-base-content/70">
             {activeGroup
               ? 'Coupons shared with this group update instantly for every member.'
               : 'Keep your personal coupons handy or assign them to a group for sharing.'}
@@ -94,46 +94,50 @@ export const DashboardPage = () => {
               });
             }
           }}
-          className="ghost"
+          className="btn btn-primary"
         >
           New group
         </button>
       </section>
 
       {reminder.shouldRemind ? (
-        <section className="banner warning">
+        <div role="alert" className="alert alert-warning mb-4">
           <div>
             <strong>Coupons expiring soon:</strong>{' '}
             {reminder.soonExpiring.map((coupon) => coupon.title).join(', ')}
           </div>
-          <button type="button" className="ghost" onClick={reminder.acknowledge}>
+          <button type="button" className="btn btn-sm" onClick={reminder.acknowledge}>
             Got it
           </button>
-        </section>
+        </div>
       ) : null}
 
-      <div className="dashboard-grid">
-        <CouponComposer
-          groups={groups}
-          defaultGroupId={groupId ?? null}
-          initialCoupon={editingCoupon}
-          onSubmit={onSubmit}
-          onCancelEdit={() => setEditingCoupon(null)}
-          isSaving={isSaving}
-        />
-        <section className="card">
-          <header className="card__header">
-            <h2>Coupons</h2>
-            {isLoadingCoupons ? <span className="muted">Loading…</span> : null}
-          </header>
-          <CouponList
-            coupons={coupons}
-            onEdit={setEditingCoupon}
-            onDelete={handleDelete}
-            onToggleUsed={handleToggleUsed}
-            onShare={handleShareLink}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-1">
+          <CouponComposer
+            groups={groups}
+            defaultGroupId={groupId ?? null}
+            initialCoupon={editingCoupon}
+            onSubmit={onSubmit}
+            onCancelEdit={() => setEditingCoupon(null)}
+            isSaving={isSaving}
           />
-        </section>
+        </div>
+        <div className="lg:col-span-2">
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title">Coupons</h2>
+              {isLoadingCoupons ? <span className="loading loading-spinner"></span> : null}
+              <CouponList
+                coupons={coupons}
+                onEdit={setEditingCoupon}
+                onDelete={handleDelete}
+                onToggleUsed={handleToggleUsed}
+                onShare={handleShareLink}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
