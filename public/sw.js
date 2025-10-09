@@ -1,30 +1,42 @@
 const CACHE_NAME = 'kupon-cache-v1';
-const urlsToCache = [
-  '/favicon.ico',
-];
+const OFFLINE_URLS = ['/', '/index.html'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('Opened cache');
-      const promises = urlsToCache.map((url) => {
-        return cache.add(url).catch((error) => {
-          console.error(`Failed to cache ${url}:`, error);
-        });
-      });
-      return Promise.all(promises);
-    })
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => cache.addAll(OFFLINE_URLS))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))))
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        if (response) {
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      return fetch(event.request)
+        .then((response) => {
+          const cloned = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cloned));
           return response;
-        }
-        return fetch(event.request);
-      })
+        })
+        .catch(() => cachedResponse);
+    })
   );
 });

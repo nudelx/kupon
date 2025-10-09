@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kupon
+
+Kupon is a Vite + React application backed by Supabase for managing, sharing, and tracking coupons across personal and family groups. The project is PWA-ready and designed to run both on desktop and mobile via the browser.
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Provide the Supabase URL and anon key via `.env` (already expected in this repo):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Available Scripts
 
-## Learn More
+- `npm run dev` – start the development server
+- `npm run build` – build the production bundle
+- `npm run preview` – preview the production build locally
+- `npm run lint` – run ESLint
+- `npm run test` – run the Vitest suite
 
-To learn more about Next.js, take a look at the following resources:
+## Supabase Schema Notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Expected tables and storage:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `coupons`: coupon metadata (`title`, `description`, `code_text`, `image_url`, `expiration_date`, `is_used`, `owner_id`, `group_id`, `share_slug`, `created_at`, `updated_at`, `used_at`)
+- `groups`: group metadata (`name`, `owner_id`, `join_code`, timestamps)
+- `group_members`: membership join table (`group_id`, `user_id`, `role`)
+- Storage bucket `coupon-images` for uploaded coupon visuals
 
-## Deploy on Vercel
+### Supabase bootstrap
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Everything the app expects from Supabase is scripted in `supabase/schema.sql`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Open the Supabase dashboard and launch the SQL editor (or use `supabase db remote commit`).
+2. Paste the contents of `supabase/schema.sql` and run it in your project. You can safely re-run it to pick up policy tweaks (for example, owners can now read their newly created groups immediately).
+   - Creates `groups`, `group_members`, and `coupons` tables with triggers.
+   - Enables and configures RLS so that users only see personal coupons or group coupons they belong to.
+   - Provisions the `coupon-images` storage bucket plus read/write policies.
+3. In Storage → Buckets, confirm `coupon-images` exists (and toggle “Public” if you want CDN delivery for images).
+
+Once that script has been applied you can start recording data directly from the UI.
+
+Row-level security should allow:
+
+- Owners to manage their personal coupons (`group_id IS NULL`)
+- Group members to read/write coupons associated with groups they belong to
+- Users to read groups where they are members and manage memberships they own
+
+### Google sign-in
+
+- In Supabase Auth settings, enable the Google provider, supply the OAuth credentials, and set the redirect URL to your deployment origin (for local development you can use `http://localhost:5173`).
+- Users can choose a magic link or the “Continue with Google” option on the login screen.
+
+## Testing
+
+- Unit tests live under `src/**/*.test.ts`. Hook behavior (such as `useWeeklyReminder`) and data-layer interactions are covered.
+- `npm run test` executes the Vitest suite; it stubs Supabase so you can run it offline.
+
+## PWA
+
+A lightweight service worker (`public/sw.js`) precaches the shell and provides offline-first fetching. The manifest lives at `public/manifest.webmanifest` and the main entry point registers the service worker on load.
+
+## Testing
+
+Unit tests live under `src/utils/__tests__` and run with Vitest. Extend coverage as new domain logic is introduced.
