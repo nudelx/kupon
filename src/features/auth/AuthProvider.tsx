@@ -3,6 +3,7 @@ import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabaseClient';
 import type { AuthContextValue, AuthState, SignInPayload } from './types';
 import { AuthContext } from './AuthContext';
+import { ROUTES } from '@/routes/paths';
 
 const createLoadingState = (): AuthState => ({ status: 'loading' });
 
@@ -50,7 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: window.location.origin
+        emailRedirectTo: window.location.origin + ROUTES.HOME
       }
     });
 
@@ -70,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin
+        redirectTo: window.location.origin + ROUTES.HOME
       }
     });
 
