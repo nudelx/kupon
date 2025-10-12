@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchCouponBySlug } from '@/features/coupons/api';
 import { format, parseISO } from 'date-fns';
+import { buildSharePath, ROUTES } from '@/routes/paths';
 
 export const SharedCouponPage = () => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export const SharedCouponPage = () => {
   });
 
   const goHome = useCallback(() => {
-    navigate('/');
+    navigate(ROUTES.HOME);
   }, [navigate]);
 
   if (isLoading) {
@@ -51,7 +52,7 @@ export const SharedCouponPage = () => {
     ? format(parseISO(coupon.expiration_date), 'PPP')
     : 'No expiration date';
 
-  const shareLink = `${window.location.origin}/share/${coupon.share_slug}`;
+  const shareLink = `${window.location.origin}${buildSharePath(coupon.share_slug!)}`;
 
   const handleShare = async () => {
     if (navigator.share) {

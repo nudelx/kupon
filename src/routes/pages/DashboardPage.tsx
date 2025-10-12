@@ -6,6 +6,7 @@ import { CouponList } from '@/features/coupons/components/CouponList';
 import { useCouponList, useCreateCoupon, useDeleteCoupon, useEnsureShareLink, useToggleCouponUsage, useUpdateCoupon } from '@/features/coupons/hooks/useCoupons';
 import type { CouponPayload, CouponRecord } from '@/features/coupons/types';
 import { useWeeklyReminder } from '@/hooks/useWeeklyReminder';
+import { buildSharePath } from '@/routes/paths';
 
 export const DashboardPage = () => {
   const { groupId } = useParams();
@@ -64,7 +65,7 @@ export const DashboardPage = () => {
     const slug = coupon.share_slug
       ? coupon.share_slug
       : await ensureShareLinkMutation.mutateAsync(coupon.id);
-    return `${window.location.origin}/share/${slug}`;
+    return `${window.location.origin}${buildSharePath(slug)}`;
   };
 
   const handleEditCoupon = (coupon: CouponRecord) => {
