@@ -6,7 +6,7 @@ import { NotFoundPage } from './pages/NotFoundPage';
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/kupon',
     element: <RootLayout />,
     errorElement: <NotFoundPage />,
     children: [
