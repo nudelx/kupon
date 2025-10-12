@@ -1,14 +1,14 @@
 {
   "name": "Kupon",
   "short_name": "Kupon",
-  "start_url": "/",
+  "start_url": "/kupon/",
   "display": "standalone",
   "background_color": "#f9fafb",
   "theme_color": "#1f2937",
   "description": "Share and manage coupons with your family in real time.",
   "icons": [
     {
-      "src": "/icons/icon.svg",
+      "src": "/kupon/icons/icon.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
