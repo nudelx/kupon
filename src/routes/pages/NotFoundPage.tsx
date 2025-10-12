@@ -7,7 +7,7 @@ export const NotFoundPage = () => {
       <section className="card">
         <h2>Page not found</h2>
         <p>We couldn&apos;t find what you were looking for.</p>
-        <button type="button" className="ghost" onClick={() => navigate('/')}>Go home</button>
+        <button type="button" className="ghost" onClick={() => navigate('/kupon')}>Go home</button>
       </section>
     </div>
   );
