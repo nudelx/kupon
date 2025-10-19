@@ -26,4 +26,5 @@ export type CouponPayload = {
 export type CouponFilters = {
   ownerId: string;
   groupId?: string | null;
+  groupIds?: string[];
 };

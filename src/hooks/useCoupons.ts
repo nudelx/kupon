@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@/features/auth/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import {
   createCoupon,
   deleteCoupon,
@@ -9,14 +9,36 @@ import {
   subscribeToCouponChanges,
   toggleCouponUsage,
   updateCoupon
-} from '../api';
-import type { CouponPayload } from '../types';
+} from '@/lib/coupons';
+import type { CouponFilters, CouponPayload } from '@/types/coupon';
 
-export const useCouponList = (groupId?: string | null) => {
+const buildFilters = ({
+  ownerId,
+  groupId,
+  groupIds
+}: {
+  ownerId: string;
+  groupId?: string | null;
+  groupIds?: string[];
+}): CouponFilters => ({
+  ownerId,
+  groupId: groupId ?? null,
+  groupIds
+});
+
+const normalizeGroupIds = (groupIds: string[]): string[] => {
+  return Array.from(new Set(groupIds.filter(Boolean))).sort();
+};
+
+export const useCouponList = (groupId?: string | null, groupIds: string[] = []) => {
   const { user, isSignedIn } = useAuth();
   const userId = user?.id ?? '';
   const queryClient = useQueryClient();
-  const filters = useMemo(() => ({ ownerId: userId, groupId: groupId ?? null }), [groupId, userId]);
+  const normalizedGroupIds = useMemo(() => normalizeGroupIds(groupIds), [groupIds]);
+  const filters = useMemo(
+    () => buildFilters({ ownerId: userId, groupId, groupIds: normalizedGroupIds }),
+    [groupId, normalizedGroupIds, userId]
+  );
 
   const query = useQuery({
     queryKey: ['coupons', filters],
@@ -42,10 +64,15 @@ export const useCouponList = (groupId?: string | null) => {
   return query;
 };
 
-export const useCreateCoupon = (groupId?: string | null) => {
+export const useCreateCoupon = (groupId?: string | null, groupIds: string[] = []) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const filters = { ownerId: user?.id ?? '', groupId: groupId ?? null };
+  const normalizedGroupIds = useMemo(() => normalizeGroupIds(groupIds), [groupIds]);
+  const ownerId = user?.id ?? '';
+  const filters = useMemo(
+    () => buildFilters({ ownerId, groupId, groupIds: normalizedGroupIds }),
+    [groupId, normalizedGroupIds, ownerId]
+  );
 
   return useMutation({
     mutationFn: (payload: CouponPayload) => {
@@ -61,10 +88,15 @@ export const useCreateCoupon = (groupId?: string | null) => {
   });
 };
 
-export const useUpdateCoupon = (groupId?: string | null) => {
+export const useUpdateCoupon = (groupId?: string | null, groupIds: string[] = []) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const filters = { ownerId: user?.id ?? '', groupId: groupId ?? null };
+  const normalizedGroupIds = useMemo(() => normalizeGroupIds(groupIds), [groupIds]);
+  const ownerId = user?.id ?? '';
+  const filters = useMemo(
+    () => buildFilters({ ownerId, groupId, groupIds: normalizedGroupIds }),
+    [groupId, normalizedGroupIds, ownerId]
+  );
 
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: CouponPayload }) => updateCoupon(id, payload),
@@ -74,10 +106,15 @@ export const useUpdateCoupon = (groupId?: string | null) => {
   });
 };
 
-export const useDeleteCoupon = (groupId?: string | null) => {
+export const useDeleteCoupon = (groupId?: string | null, groupIds: string[] = []) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const filters = { ownerId: user?.id ?? '', groupId: groupId ?? null };
+  const normalizedGroupIds = useMemo(() => normalizeGroupIds(groupIds), [groupIds]);
+  const ownerId = user?.id ?? '';
+  const filters = useMemo(
+    () => buildFilters({ ownerId, groupId, groupIds: normalizedGroupIds }),
+    [groupId, normalizedGroupIds, ownerId]
+  );
 
   return useMutation({
     mutationFn: (id: string) => deleteCoupon(id),
@@ -87,10 +124,15 @@ export const useDeleteCoupon = (groupId?: string | null) => {
   });
 };
 
-export const useToggleCouponUsage = (groupId?: string | null) => {
+export const useToggleCouponUsage = (groupId?: string | null, groupIds: string[] = []) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const filters = { ownerId: user?.id ?? '', groupId: groupId ?? null };
+  const normalizedGroupIds = useMemo(() => normalizeGroupIds(groupIds), [groupIds]);
+  const ownerId = user?.id ?? '';
+  const filters = useMemo(
+    () => buildFilters({ ownerId, groupId, groupIds: normalizedGroupIds }),
+    [groupId, normalizedGroupIds, ownerId]
+  );
 
   return useMutation({
     mutationFn: ({ id, isUsed }: { id: string; isUsed: boolean }) => toggleCouponUsage({ id, isUsed }),

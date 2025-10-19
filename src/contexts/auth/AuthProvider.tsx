@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabaseClient';
-import type { AuthContextValue, AuthState, SignInPayload } from './types';
-import { AuthContext } from './AuthContext';
 import { ROUTES } from '@/routes/paths';
+import type { AuthContextValue, AuthState, SignInPayload } from '@/types/auth';
+import { AuthContext } from './AuthContext';
 
 const createLoadingState = (): AuthState => ({ status: 'loading' });
 
@@ -12,6 +12,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     let isMounted = true;
+
+    const clearEmptyHash = () => {
+      if (window.location.hash && window.location.hash.replace(/#/g, '') === '') {
+        const url = `${window.location.pathname}${window.location.search}`;
+        window.history.replaceState(null, document.title, url);
+      }
+    };
+
+    clearEmptyHash();
+
+    const handleHashChange = () => {
+      clearEmptyHash();
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
 
     const syncSession = async () => {
       const {
@@ -25,6 +40,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setState({ status: 'signed-out' });
       }
+
+      clearEmptyHash();
     };
 
     syncSession();
@@ -39,11 +56,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setState({ status: 'signed-out' });
       }
+
+      clearEmptyHash();
     });
 
     return () => {
       isMounted = false;
       subscription.unsubscribe();
+      window.removeEventListener('hashchange', handleHashChange);
     };
   }, []);
 

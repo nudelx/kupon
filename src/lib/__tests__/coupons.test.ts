@@ -10,18 +10,14 @@ vi.mock('@/lib/supabaseClient', () => {
 });
 
 import { supabase } from '@/lib/supabaseClient';
-import {
-  createCoupon,
-  ensureShareSlug,
-  fetchCoupons
-} from '../api';
-import type { CouponPayload } from '../types';
+import { createCoupon, ensureShareSlug, fetchCoupons } from '@/lib/coupons';
+import type { CouponPayload } from '@/types/coupon';
 
 type QueryBuilder<T> = {
   select: Mock;
   order: Mock;
   eq: Mock;
-  is: Mock;
+  or: Mock;
   insert: Mock;
   update: Mock;
   delete: Mock;
@@ -34,7 +30,7 @@ const createQueryBuilder = <T>({ data, error }: { data: T; error: PostgrestError
     select: vi.fn(),
     order: vi.fn(),
     eq: vi.fn(),
-    is: vi.fn(),
+    or: vi.fn(),
     insert: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
@@ -45,7 +41,7 @@ const createQueryBuilder = <T>({ data, error }: { data: T; error: PostgrestError
   builder.select.mockReturnValue(builder);
   builder.order.mockReturnValue(builder);
   builder.eq.mockReturnValue(builder);
-  builder.is.mockReturnValue(builder);
+  builder.or.mockReturnValue(builder);
   builder.insert.mockReturnValue(builder);
   builder.update.mockReturnValue(builder);
   builder.delete.mockReturnValue(builder);
@@ -70,7 +66,7 @@ describe('coupon API', () => {
 
     expect(supabaseFrom).toHaveBeenCalledWith('coupons');
     expect(builder.eq).toHaveBeenCalledWith('owner_id', 'user-1');
-    expect(builder.is).toHaveBeenCalledWith('group_id', null);
+    expect(builder.or).not.toHaveBeenCalled();
     expect(result).toEqual(expected);
   });
 
@@ -82,7 +78,7 @@ describe('coupon API', () => {
 
     expect(builder.eq).toHaveBeenCalledWith('group_id', 'group-1');
     expect(builder.eq).toHaveBeenCalledTimes(1);
-    expect(builder.is).not.toHaveBeenCalled();
+    expect(builder.or).not.toHaveBeenCalled();
   });
 
   it('throws when Supabase responds with an error', async () => {
@@ -90,6 +86,18 @@ describe('coupon API', () => {
     supabaseFrom.mockReturnValue(builder);
 
     await expect(fetchCoupons({ ownerId: 'user-1', groupId: null })).rejects.toThrow('fail');
+  });
+
+  it('includes group memberships when fetching all coupons', async () => {
+    const builder = createQueryBuilder({ data: [], error: null });
+    supabaseFrom.mockReturnValue(builder);
+
+    await fetchCoupons({ ownerId: 'user-1', groupId: null, groupIds: ['group-1', 'group-2'] });
+
+    expect(builder.or).toHaveBeenCalledTimes(1);
+    const filterExpression = builder.or.mock.calls[0][0];
+    expect(filterExpression).toContain('owner_id.eq.user-1');
+    expect(filterExpression).toContain('group_id.in.(group-1,group-2)');
   });
 
   it('creates a coupon with a generated share slug', async () => {

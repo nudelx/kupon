@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react';
-import { useAuth } from './useAuth';
-import { SignInPanel } from './SignInPanel';
+import { useAuth } from '@/hooks/useAuth';
+import { SignInPanel } from '@/components/auth/SignInPanel';
 
 export const AuthGate = ({ children }: { children: ReactNode }) => {
   const { isLoading, isSignedIn } = useAuth();
@@ -15,12 +15,7 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
   }
 
   if (!isSignedIn) {
-    return (
-      <SignInPanel
-        hasRequestedLink={hasRequestedLink}
-        onRequestComplete={() => setHasRequestedLink(true)}
-      />
-    );
+    return <SignInPanel hasRequestedLink={hasRequestedLink} onRequestComplete={() => setHasRequestedLink(true)} />;
   }
 
   return <>{children}</>;

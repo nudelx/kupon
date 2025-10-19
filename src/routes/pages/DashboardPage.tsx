@@ -1,12 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useCreateGroup, useGroups, useJoinGroup } from '@/features/groups/hooks/useGroups';
 import { CouponModal } from '@/components/CouponModal';
-import { CouponList } from '@/features/coupons/components/CouponList';
-import { useCouponList, useCreateCoupon, useDeleteCoupon, useEnsureShareLink, useToggleCouponUsage, useUpdateCoupon } from '@/features/coupons/hooks/useCoupons';
-import type { CouponPayload, CouponRecord } from '@/features/coupons/types';
+import { CouponList } from '@/components/coupons/CouponList';
+import { useCreateGroup, useGroups, useJoinGroup } from '@/hooks/useGroups';
+import {
+  useCouponList,
+  useCreateCoupon,
+  useDeleteCoupon,
+  useEnsureShareLink,
+  useToggleCouponUsage,
+  useUpdateCoupon
+} from '@/hooks/useCoupons';
 import { useWeeklyReminder } from '@/hooks/useWeeklyReminder';
 import { buildSharePath } from '@/routes/paths';
+import type { CouponPayload, CouponRecord } from '@/types/coupon';
 
 export const DashboardPage = () => {
   const { groupId } = useParams();
@@ -15,16 +22,23 @@ export const DashboardPage = () => {
   const { data: groups = [], isLoading: isLoadingGroups } = useGroups();
   const joinGroupMutation = useJoinGroup();
   const createGroupMutation = useCreateGroup();
-  const { data: coupons = [], isLoading: isLoadingCoupons } = useCouponList(groupId);
-  const createCouponMutation = useCreateCoupon(groupId);
-  const updateCouponMutation = useUpdateCoupon(groupId);
-  const deleteCouponMutation = useDeleteCoupon(groupId);
-  const toggleCouponMutation = useToggleCouponUsage(groupId);
+  const groupIds = useMemo(() => groups.map((group) => group.id), [groups]);
+  const { data: coupons = [], isLoading: isLoadingCoupons } = useCouponList(groupId, groupIds);
+  const createCouponMutation = useCreateCoupon(groupId, groupIds);
+  const updateCouponMutation = useUpdateCoupon(groupId, groupIds);
+  const deleteCouponMutation = useDeleteCoupon(groupId, groupIds);
+  const toggleCouponMutation = useToggleCouponUsage(groupId, groupIds);
   const ensureShareLinkMutation = useEnsureShareLink();
   const [editingCoupon, setEditingCoupon] = useState<CouponRecord | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const reminder = useWeeklyReminder(coupons);
   const activeGroup = useMemo(() => groups.find((group) => group.id === groupId) ?? null, [groupId, groups]);
+  const groupNames = useMemo(() => {
+    return groups.reduce<Record<string, string>>((accumulator, group) => {
+      accumulator[group.id] = group.name;
+      return accumulator;
+    }, {});
+  }, [groups]);
 
   useEffect(() => {
     if (joinCode) {
@@ -155,6 +169,7 @@ export const DashboardPage = () => {
             onDelete={handleDelete}
             onToggleUsed={handleToggleUsed}
             onShare={handleShareLink}
+            groupNames={groupNames}
           />
         )}
       </div>

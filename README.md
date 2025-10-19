@@ -24,6 +24,17 @@ VITE_SUPABASE_ANON_KEY=...
 - `npm run lint` – run ESLint
 - `npm run test` – run the Vitest suite
 
+## Project Structure
+
+- `src/components/` – presentational React components grouped by domain (e.g. `auth`, `coupons`, `groups`) plus shared UI primitives.
+- `src/contexts/` – React context providers such as `auth/` and `ThemeContext`.
+- `src/hooks/` – reusable stateful hooks (`useAuth`, `useCoupons`, `useGroups`, `useWeeklyReminder`, etc.).
+- `src/lib/` – Supabase-facing data access helpers (`coupons.ts`, `groups.ts`, storage utilities, client).
+- `src/routes/` – router definitions and page-level screens.
+- `src/styles/` – Tailwind entry point and custom global styles.
+- `src/types/` – shared TypeScript types for coupons, groups, auth, and themes.
+- `src/utils/` – framework-agnostic helpers (ID generation, etc.).
+
 ## Supabase Schema Notes
 
 Expected tables and storage:
@@ -65,7 +76,3 @@ Row-level security should allow:
 ## PWA
 
 A lightweight service worker (`public/sw.js`) precaches the shell and provides offline-first fetching. The manifest lives at `public/manifest.webmanifest` and the main entry point registers the service worker on load.
-
-## Testing
-
-Unit tests live under `src/utils/__tests__` and run with Vitest. Extend coverage as new domain logic is introduced.

@@ -1,9 +1,9 @@
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react';
-import type { GroupRecord } from '@/features/groups/api';
 import { uploadCouponImage } from '@/lib/storage';
-import { useAuth } from '@/features/auth/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { ImagePreview } from '@/components/ui';
-import type { CouponPayload, CouponRecord } from '@/features/coupons/types';
+import type { CouponPayload, CouponRecord } from '@/types/coupon';
+import type { GroupRecord } from '@/types/group';
 
 export type CouponModalProps = {
   isOpen: boolean;

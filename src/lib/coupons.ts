@@ -1,8 +1,8 @@
 import { supabase } from '@/lib/supabaseClient';
 import { createShareSlug } from '@/utils/id';
-import type { CouponFilters, CouponPayload, CouponRecord } from './types';
+import type { CouponFilters, CouponPayload, CouponRecord } from '@/types/coupon';
 
-export const fetchCoupons = async ({ ownerId, groupId }: CouponFilters) => {
+export const fetchCoupons = async ({ ownerId, groupId, groupIds = [] }: CouponFilters) => {
   let query = supabase
     .from('coupons')
     .select('*')
@@ -13,7 +13,14 @@ export const fetchCoupons = async ({ ownerId, groupId }: CouponFilters) => {
   if (groupId) {
     query = query.eq('group_id', groupId);
   } else {
-    query = query.eq('owner_id', ownerId).is('group_id', null);
+    const sanitizedGroupIds = groupIds.filter((value) => Boolean(value));
+
+    if (sanitizedGroupIds.length) {
+      const orFilters = [`owner_id.eq.${ownerId}`, `group_id.in.(${sanitizedGroupIds.join(',')})`];
+      query = query.or(orFilters.join(','));
+    } else {
+      query = query.eq('owner_id', ownerId);
+    }
   }
 
   const { data, error } = await query;
@@ -25,10 +32,14 @@ export const fetchCoupons = async ({ ownerId, groupId }: CouponFilters) => {
   return (data ?? []) as CouponRecord[];
 };
 
+export type CouponWithGroup = CouponRecord & {
+  group?: { name: string } | null;
+};
+
 export const fetchCouponBySlug = async (slug: string) => {
   const { data, error } = await supabase
     .from('coupons')
-    .select('*')
+    .select('*, group:groups(name)')
     .eq('share_slug', slug)
     .single();
 
@@ -36,7 +47,7 @@ export const fetchCouponBySlug = async (slug: string) => {
     throw error;
   }
 
-  return data as CouponRecord;
+  return data as CouponWithGroup;
 };
 
 export const createCoupon = async (payload: CouponPayload & { owner_id: string }) => {
@@ -113,24 +124,45 @@ export const ensureShareSlug = async (id: string) => {
 };
 
 export const subscribeToCouponChanges = (filters: CouponFilters, onChange: () => void) => {
-  const channel = supabase.channel(`coupons-${filters.groupId ?? 'personal'}`);
+  const channels: ReturnType<typeof supabase.channel>[] = [];
 
-  channel
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'coupons',
-        filter: filters.groupId ? `group_id=eq.${filters.groupId}` : `owner_id=eq.${filters.ownerId}`
-      },
-      () => {
-        onChange();
-      }
-    )
-    .subscribe();
+  const handleOn = (channel: ReturnType<typeof supabase.channel>, filter: string) => {
+    channel
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'coupons',
+          filter
+        },
+        () => {
+          onChange();
+        }
+      )
+      .subscribe();
+  };
+
+  if (filters.groupId) {
+    const channel = supabase.channel(`coupons-group-${filters.groupId}`);
+    handleOn(channel, `group_id=eq.${filters.groupId}`);
+    channels.push(channel);
+  } else {
+    const personalChannel = supabase.channel(`coupons-personal-${filters.ownerId}`);
+    handleOn(personalChannel, `owner_id=eq.${filters.ownerId}`);
+    channels.push(personalChannel);
+
+    const uniqueGroupIds = Array.from(new Set((filters.groupIds ?? []).filter(Boolean)));
+    uniqueGroupIds.forEach((groupId) => {
+      const channel = supabase.channel(`coupons-group-${groupId}`);
+      handleOn(channel, `group_id=eq.${groupId}`);
+      channels.push(channel);
+    });
+  }
 
   return () => {
-    supabase.removeChannel(channel);
+    channels.forEach((channel) => {
+      supabase.removeChannel(channel);
+    });
   };
 };

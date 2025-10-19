@@ -1,9 +1,8 @@
 import { FormEvent, useState } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
-import { useGroups, useCreateGroup, useJoinGroup, useLeaveGroup } from '../hooks/useGroups';
+import { useCreateGroup, useGroups, useJoinGroup, useLeaveGroup } from '@/hooks/useGroups';
 
-const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-  isActive ? 'active' : '';
+const navLinkClass = ({ isActive }: { isActive: boolean }) => (isActive ? 'active' : '');
 
 export const GroupSidebar = () => {
   const { data: groups, isLoading } = useGroups();
@@ -28,9 +27,7 @@ export const GroupSidebar = () => {
 
     try {
       const created = await createGroupMutation.mutateAsync(newGroupName.trim());
-      setMessage(
-        `Group "${created.name}" created. Share code: ${created.join_code}`
-      );
+      setMessage(`Group "${created.name}" created. Share code: ${created.join_code}`);
       setNewGroupName('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to create group.');
@@ -73,15 +70,19 @@ export const GroupSidebar = () => {
       <div className="p-4 border-b border-base-300">
         <h2 className="text-lg font-semibold text-base-content">Navigation</h2>
       </div>
-      
+
       {message ? (
         <div role="alert" className="alert alert-success mx-4 mt-4">
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clipRule="evenodd"
+            />
           </svg>
           <div className="text-sm">
             {message}
-            {message.includes('Share code:') && (
+            {message.includes('Share code:') ? (
               <button
                 className="btn btn-xs btn-ghost ml-2"
                 onClick={() => {
@@ -91,15 +92,19 @@ export const GroupSidebar = () => {
               >
                 Copy code
               </button>
-            )}
+            ) : null}
           </div>
         </div>
       ) : null}
-      
+
       {error ? (
         <div role="alert" className="alert alert-error mx-4 mt-4">
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            <path
+              fillRule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+              clipRule="evenodd"
+            />
           </svg>
           <span className="text-sm">{error}</span>
         </div>
@@ -109,42 +114,52 @@ export const GroupSidebar = () => {
         <li>
           <NavLink to="/" className={`${navLinkClass} btn-mobile justify-start`} end>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+              />
             </svg>
             All coupons
           </NavLink>
         </li>
-        
+
         <li className="menu-title">
           <span className="text-base-content/70 font-medium">Groups</span>
         </li>
-        
+
         {isLoading ? (
           <li className="p-4">
-            <span className="loading loading-spinner loading-sm"></span>
+            <span className="loading loading-spinner loading-sm" />
             <span className="ml-2 text-sm text-base-content/70">Loading groups…</span>
           </li>
         ) : null}
-        
+
         {groups?.map((group) => (
           <li key={group.id}>
             <NavLink to={`/groups/${group.id}`} className={`${navLinkClass} btn-mobile justify-start`}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
               </svg>
               {group.name}
             </NavLink>
           </li>
         ))}
-        
+
         {groups?.length === 0 && !isLoading ? (
           <li className="p-4 text-sm text-base-content/70">No groups yet.</li>
         ) : null}
-        
+
         <li className="menu-title">
           <span className="text-base-content/70 font-medium">Actions</span>
         </li>
-        
+
         <li>
           <details className="group">
             <summary className="btn-mobile justify-start">
@@ -162,23 +177,24 @@ export const GroupSidebar = () => {
                   value={newGroupName}
                   onChange={(event) => setNewGroupName(event.target.value)}
                 />
-                <button 
-                  type="submit" 
-                  className="btn btn-primary btn-sm w-full" 
-                  disabled={createGroupMutation.isPending}
-                >
+                <button type="submit" className="btn btn-primary btn-sm w-full" disabled={createGroupMutation.isPending}>
                   {createGroupMutation.isPending ? 'Creating…' : 'Create'}
                 </button>
               </form>
             </div>
           </details>
         </li>
-        
+
         <li>
           <details className="group">
             <summary className="btn-mobile justify-start">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                />
               </svg>
               Join group
             </summary>
@@ -191,31 +207,32 @@ export const GroupSidebar = () => {
                   value={joinCode}
                   onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
                 />
-                <button 
-                  type="submit" 
-                  className="btn btn-primary btn-sm w-full" 
-                  disabled={joinGroupMutation.isPending}
-                >
+                <button type="submit" className="btn btn-primary btn-sm w-full" disabled={joinGroupMutation.isPending}>
                   {joinGroupMutation.isPending ? 'Joining…' : 'Join'}
                 </button>
               </form>
             </div>
           </details>
         </li>
-        
-        {groupId && (
+
+        {groupId ? (
           <li>
-            <button 
-              className="btn btn-error btn-sm w-full justify-start" 
-              onClick={() => handleLeaveGroup(groupId, groups?.find(g => g.id === groupId)?.name ?? '')}
+            <button
+              className="btn btn-error btn-sm w-full justify-start"
+              onClick={() => handleLeaveGroup(groupId, groups?.find((group) => group.id === groupId)?.name ?? '')}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
               </svg>
               Leave group
             </button>
           </li>
-        )}
+        ) : null}
       </ul>
     </div>
   );

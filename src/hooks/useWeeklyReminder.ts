@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { differenceInDays, isWithinInterval, parseISO } from 'date-fns';
-import type { CouponRecord } from '@/features/coupons/types';
+import type { CouponRecord } from '@/types/coupon';
 
 const STORAGE_KEY = 'kupon:lastReminder';
 

@@ -1,15 +1,15 @@
 import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { fetchCouponBySlug } from '@/features/coupons/api';
 import { format, parseISO } from 'date-fns';
+import { fetchCouponBySlug, type CouponWithGroup } from '@/lib/coupons';
 import { buildSharePath, ROUTES } from '@/routes/paths';
 
 export const SharedCouponPage = () => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
 
-  const { data: coupon, isLoading, isError } = useQuery({
+  const { data: coupon, isLoading, isError } = useQuery<CouponWithGroup>({
     queryKey: ['shared-coupon', slug],
     queryFn: () => fetchCouponBySlug(slug as string),
     enabled: Boolean(slug)
@@ -53,6 +53,7 @@ export const SharedCouponPage = () => {
     : 'No expiration date';
 
   const shareLink = `${window.location.origin}${buildSharePath(coupon.share_slug!)}`;
+  const groupName = coupon.group?.name ?? null;
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -72,9 +73,12 @@ export const SharedCouponPage = () => {
       <div className="hero-content">
         <div className="card w-full max-w-lg shadow-2xl bg-base-100">
           <div className="card-body">
-            <div className="card-title">
+            <div className="card-title flex flex-col items-start gap-3">
               <h1>{coupon.title}</h1>
-              <div className="badge badge-secondary">Shared with you</div>
+              <div className="flex flex-wrap gap-2">
+                <div className="badge badge-secondary">Shared with you</div>
+                {groupName ? <div className="badge badge-info">{groupName}</div> : null}
+              </div>
             </div>
             {coupon.image_url ? (
               <figure className="my-4"><img src={coupon.image_url} alt={coupon.title} className="rounded-xl" /></figure>

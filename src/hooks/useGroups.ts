@@ -1,24 +1,17 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/features/auth/useAuth";
-import {
-  createGroup,
-  fetchGroupsForUser,
-  joinGroupWithCode,
-  leaveGroup,
-} from "../api";
-import type { GroupRecord } from "../api";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/hooks/useAuth';
+import { createGroup, fetchGroupsForUser, joinGroupWithCode, leaveGroup } from '@/lib/groups';
+import type { GroupRecord } from '@/types/group';
 
 export const useGroups = () => {
   const { user, isSignedIn } = useAuth();
   const userId = user?.id;
-  console.log("userId", userId);
-  const query = useQuery<GroupRecord[]>({
-    queryKey: ["groups", userId],
-    queryFn: () => fetchGroupsForUser(userId as string),
-    enabled: isSignedIn && Boolean(userId),
-  });
 
-  return query;
+  return useQuery<GroupRecord[]>({
+    queryKey: ['groups', userId],
+    queryFn: () => fetchGroupsForUser(userId as string),
+    enabled: isSignedIn && Boolean(userId)
+  });
 };
 
 export const useCreateGroup = () => {
@@ -28,13 +21,13 @@ export const useCreateGroup = () => {
   return useMutation<GroupRecord, Error, string>({
     mutationFn: (name: string) => {
       if (!user) {
-        throw new Error("You must be signed in to create a group.");
+        throw new Error('You must be signed in to create a group.');
       }
       return createGroup({ name, ownerId: user.id });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["groups", user?.id] });
-    },
+      await queryClient.invalidateQueries({ queryKey: ['groups', user?.id] });
+    }
   });
 };
 
@@ -45,13 +38,13 @@ export const useJoinGroup = () => {
   return useMutation<GroupRecord, Error, string>({
     mutationFn: (code: string) => {
       if (!user) {
-        throw new Error("You must be signed in to join a group.");
+        throw new Error('You must be signed in to join a group.');
       }
       return joinGroupWithCode({ code, userId: user.id });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["groups", user?.id] });
-    },
+      await queryClient.invalidateQueries({ queryKey: ['groups', user?.id] });
+    }
   });
 };
 
@@ -62,12 +55,12 @@ export const useLeaveGroup = () => {
   return useMutation<void, Error, string>({
     mutationFn: (groupId: string) => {
       if (!user) {
-        throw new Error("You must be signed in to leave a group.");
+        throw new Error('You must be signed in to leave a group.');
       }
       return leaveGroup({ groupId, userId: user.id });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["groups", user?.id] });
-    },
+      await queryClient.invalidateQueries({ queryKey: ['groups', user?.id] });
+    }
   });
 };

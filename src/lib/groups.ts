@@ -1,13 +1,6 @@
 import { supabase } from '@/lib/supabaseClient';
 import { createJoinCode } from '@/utils/id';
-
-export type GroupRecord = {
-  id: string;
-  name: string;
-  owner_id: string;
-  join_code: string;
-  created_at: string;
-};
+import type { GroupRecord } from '@/types/group';
 
 export const fetchGroupsForUser = async (userId: string) => {
   const { data, error } = await supabase
@@ -65,13 +58,7 @@ export const createGroup = async ({ name, ownerId }: { name: string; ownerId: st
   return data as GroupRecord;
 };
 
-export const joinGroupWithCode = async ({
-  code,
-  userId
-}: {
-  code: string;
-  userId: string;
-}) => {
+export const joinGroupWithCode = async ({ code, userId }: { code: string; userId: string }) => {
   const { data, error } = await supabase
     .from('groups')
     .select('id, name, owner_id, join_code, created_at')

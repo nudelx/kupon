@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
-import { AuthGate } from '@/features/auth/AuthGate';
+import { AuthGate } from '@/components/auth/AuthGate';
 import { AppHeader } from '@/components/AppHeader';
-import { GroupSidebar } from '@/features/groups/components/GroupSidebar';
+import { GroupSidebar } from '@/components/groups/GroupSidebar';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
 export const RootLayout = () => {

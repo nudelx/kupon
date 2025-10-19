@@ -3,7 +3,7 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { addDays, subDays } from 'date-fns';
 import { describe, beforeEach, expect, it } from 'vitest';
 import { useWeeklyReminder } from '../useWeeklyReminder';
-import type { CouponRecord } from '@/features/coupons/types';
+import type { CouponRecord } from '@/types/coupon';
 
 const createCoupon = (overrides: Partial<CouponRecord> = {}): CouponRecord => ({
   id: overrides.id ?? randomUUID(),
