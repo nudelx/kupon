@@ -107,14 +107,12 @@ export const CouponList = ({ coupons, onEdit, onDelete, onToggleUsed, onShare, g
               ) : null}
 
               <div className="card-body card-mobile">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div className="flex flex-col gap-2">
-                    <h2 className="card-title text-lg font-semibold text-base-content line-clamp-2">{coupon.title}</h2>
-                    {groupLabel ? <span className="badge badge-info badge-sm w-fit">{groupLabel}</span> : null}
+                <div className="mb-3">
+                  <div className="flex items-center gap-2">
+                    <h2 className="card-title text-lg font-semibold text-base-content line-clamp-2 flex-1">{coupon.title}</h2>
+                    {groupLabel ? <span className="badge badge-info badge-sm flex-shrink-0">{groupLabel}</span> : null}
                   </div>
-                  <div className="flex items-start gap-2 flex-wrap justify-end">
-                    <div className={`badge ${expiration.className} flex-shrink-0`}>{expiration.label}</div>
-                  </div>
+                  <div className={`badge ${expiration.className} mt-2`}>{expiration.label}</div>
                 </div>
 
                 {coupon.description ? (
@@ -140,42 +138,56 @@ export const CouponList = ({ coupons, onEdit, onDelete, onToggleUsed, onShare, g
                   </div>
                 ) : null}
 
-                <div className="card-actions justify-end gap-2 flex-wrap">
-                  <button
-                    type="button"
-                    onClick={() => onToggleUsed(coupon)}
-                    className={`btn btn-sm ${coupon.is_used ? 'btn-warning' : 'btn-success'}`}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    {coupon.is_used ? 'Mark unused' : 'Mark used'}
-                  </button>
+                <div className="card-actions flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onToggleUsed(coupon)}
+                      className={`btn btn-outline btn-xs sm:btn-sm ${coupon.is_used ? 'btn-warning' : 'btn-success'}`}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      {coupon.is_used ? 'Mark unused' : 'Mark used'}
+                    </button>
+                  </div>
 
-                  <button type="button" onClick={() => onEdit(coupon)} className="btn btn-sm btn-ghost">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit
-                  </button>
+                  <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end row with space">
+                    <button
+                      type="button"
+                      onClick={() => onDelete(coupon)}
+                      className="btn btn-ghost btn-xs sm:btn-sm text-error hover:bg-error hover:text-error-content"
+                      aria-label="Delete coupon"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
 
-                  <button type="button" onClick={() => handleShare(coupon)} className="btn btn-sm btn-ghost">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                    </svg>
-                    Share
-                  </button>
+                    <div className="flex items-center gap-2 sm:ml-2">
+                      <button
+                        type="button"
+                        onClick={() => onEdit(coupon)}
+                        className="btn btn-ghost btn-xs sm:btn-sm"
+                        aria-label="Edit coupon"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
 
-                  <button
-                    type="button"
-                    onClick={() => onDelete(coupon)}
-                    className="btn btn-sm btn-ghost text-error hover:bg-error hover:text-error-content"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Remove
-                  </button>
+                      <button
+                        type="button"
+                        onClick={() => handleShare(coupon)}
+                        className="btn btn-ghost btn-xs sm:btn-sm"
+                        aria-label="Share coupon"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
