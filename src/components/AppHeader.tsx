@@ -22,18 +22,18 @@ export const AppHeader = () => {
 
   return (
     <div className="navbar header-friendly">
-      <div className="flex-1">
+      <div className="flex-1 flex items-center gap-2">
         <label htmlFor="my-drawer-2" className="btn btn-ghost btn-square lg:hidden">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </label>
-        <a className="btn btn-ghost text-xl font-bold text-primary hover:text-primary flex items-center justify-start">
-          Kupon
-          <span className="text-xs text-gray-500 ml-2">v{packageJson.version}</span>
+        <a className="btn btn-ghost text-xl font-bold text-primary hover:text-primary flex items-center gap-2 min-w-0">
+          <span className="truncate">Kupon</span>
+          <span className="text-xs text-gray-500 flex-shrink-0">v{packageJson.version}</span>
         </a>
       </div>
-      <div className="flex-none gap-2">
+      <div className="flex-none gap-1 sm:gap-2 flex items-center">
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}

@@ -8,12 +8,12 @@ export const RootLayout = () => {
   return (
     <ThemeProvider>
       <AuthGate>
-        <div className="text-base-content min-h-screen">
+        <div className="text-base-content min-h-screen overflow-x-hidden">
           <AppHeader />
           <div className="drawer lg:drawer-open">
             <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-            <div className="drawer-content">
-              <div className="section-mobile">
+            <div className="drawer-content overflow-x-hidden">
+              <div className="section-mobile min-h-screen">
                 <Outlet />
               </div>
             </div>
