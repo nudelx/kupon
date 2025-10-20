@@ -207,7 +207,7 @@ export const GroupSidebar = () => {
                   placeholder="Join code"
                   className="input input-bordered input-mobile w-full"
                   value={joinCode}
-                  onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
+                  onChange={(event) => setJoinCode(event.target.value)}
                 />
                 <button type="submit" className="btn btn-primary btn-sm w-full" disabled={joinGroupMutation.isPending}>
                   {joinGroupMutation.isPending ? 'Joining…' : 'Join'}
