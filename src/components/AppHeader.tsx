@@ -1,5 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
+import packageJson from '../../package.json';
 
 type UserWithAvatar = {
   email: string;
@@ -27,7 +28,10 @@ export const AppHeader = () => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </label>
-        <a className="btn btn-ghost text-xl font-bold text-primary hover:text-primary">Kupon</a>
+        <a className="btn btn-ghost text-xl font-bold text-primary hover:text-primary flex items-center justify-start">
+          Kupon
+          <span className="text-xs text-gray-500 ml-2">v{packageJson.version}</span>
+        </a>
       </div>
       <div className="flex-none gap-2">
         {/* Theme Toggle Button */}
