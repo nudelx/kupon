@@ -18,11 +18,11 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.GROUPS,
         element: <DashboardPage />
+      },
+      {
+        path: ROUTES.SHARE,
+        element: <SharedCouponPage />
       }
     ]
-  },
-  {
-    path: ROUTES.SHARE,
-    element: <SharedCouponPage />
   }
 ]);

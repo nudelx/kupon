@@ -9,6 +9,10 @@ export const SharedCouponPage = () => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
 
+  // Debug logging
+  console.log('SharedCouponPage: slug =', slug);
+  console.log('SharedCouponPage: current URL =', window.location.href);
+
   const { data: coupon, isLoading, isError } = useQuery<CouponWithGroup>({
     queryKey: ['shared-coupon', slug],
     queryFn: () => fetchCouponBySlug(slug as string),

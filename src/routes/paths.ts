@@ -12,7 +12,7 @@ const BASE_PATH = getBasePath();
 export const ROUTES = {
   HOME: BASE_PATH,
   GROUPS: "groups/:groupId",
-  SHARE: `${BASE_PATH}/share/:slug`,
+  SHARE: "share/:slug",
 } as const;
 
 /**
