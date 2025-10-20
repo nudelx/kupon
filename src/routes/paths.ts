@@ -7,15 +7,17 @@ const getBasePath = () => {
   return "/kupon";
 };
 
+const BASE_PATH = getBasePath();
+
 export const ROUTES = {
-  HOME: getBasePath(),
+  HOME: BASE_PATH,
   GROUPS: "groups/:groupId",
-  SHARE: "/share/:slug",
+  SHARE: `${BASE_PATH}/share/:slug`,
 } as const;
 
 /**
  * Helper functions to build dynamic routes
  */
 export const buildGroupPath = (groupId: string) =>
-  `${ROUTES.HOME}/groups/${groupId}`;
-export const buildSharePath = (slug: string) => `/share/${slug}`;
+  `${BASE_PATH}/groups/${groupId}`;
+export const buildSharePath = (slug: string) => `${BASE_PATH}/share/${slug}`;
