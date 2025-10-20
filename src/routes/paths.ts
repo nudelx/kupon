@@ -4,7 +4,7 @@
  */
 
 const getBasePath = () => {
-  return import.meta.env.DEV ? "/" : "/kupon";
+  return "/kupon/";
 };
 
 export const ROUTES = {
