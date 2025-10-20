@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 import { useCreateGroup, useGroups, useJoinGroup, useLeaveGroup } from '@/hooks/useGroups';
+import { ROUTES, buildGroupPath } from '@/routes/paths';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `${isActive ? 'active ' : ''}btn-mobile justify-start`;
@@ -113,7 +114,7 @@ export const GroupSidebar = () => {
 
       <ul className="menu p-4">
         <li>
-          <NavLink to="/" className={navLinkClass} end>
+          <NavLink to={ROUTES.HOME} className={navLinkClass} end>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
@@ -139,7 +140,7 @@ export const GroupSidebar = () => {
 
         {groups?.map((group) => (
           <li key={group.id}>
-            <NavLink to={`/groups/${group.id}`} className={navLinkClass}>
+            <NavLink to={buildGroupPath(group.id)} className={navLinkClass}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
