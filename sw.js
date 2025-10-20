@@ -1,41 +1,51 @@
-// Service worker for Kupon PWA
+// Service worker for Kupon PWA - Version-based caching strategy
 
-const CACHE_NAME = "kupon-v1";
-const STATIC_CACHE_URLS = [
-  "/kupon/",
+// Version from package.json - update this when you want to force cache refresh
+const APP_VERSION = "0.0.4";
+const CACHE_NAME = `kupon-essential-v${APP_VERSION}`;
+const ESSENTIAL_ASSETS = [
   "/kupon/manifest.webmanifest",
   "/kupon/icons/icon.svg",
 ];
 
 self.addEventListener("install", (event) => {
-  console.log("Service worker installing...");
+  console.log(`Service worker installing for version ${APP_VERSION}...`);
   event.waitUntil(
     caches
       .open(CACHE_NAME)
       .then((cache) => {
-        console.log("Caching static assets");
-        return cache.addAll(STATIC_CACHE_URLS);
+        console.log(`Caching essential assets for version ${APP_VERSION}`);
+        return cache.addAll(ESSENTIAL_ASSETS);
       })
-      .then(() => self.skipWaiting())
+      .then(() => {
+        console.log(`Cache created: ${CACHE_NAME}`);
+        return self.skipWaiting();
+      })
   );
 });
 
 self.addEventListener("activate", (event) => {
-  console.log("Service worker activating...");
+  console.log(`Service worker activating for version ${APP_VERSION}...`);
   event.waitUntil(
     caches
       .keys()
       .then((cacheNames) => {
+        console.log(`Found ${cacheNames.length} existing caches:`, cacheNames);
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (cacheName !== CACHE_NAME) {
-              console.log("Deleting old cache:", cacheName);
+              console.log(`Deleting old cache: ${cacheName}`);
               return caches.delete(cacheName);
+            } else {
+              console.log(`Keeping current cache: ${cacheName}`);
             }
           })
         );
       })
-      .then(() => self.clients.claim())
+      .then(() => {
+        console.log(`Cache cleanup complete for version ${APP_VERSION}`);
+        return self.clients.claim();
+      })
   );
 });
 
@@ -50,18 +60,31 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  event.respondWith(
-    caches
-      .match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
-      })
-      .catch(() => {
-        // If both cache and network fail, return offline page for navigation requests
-        if (event.request.destination === "document") {
-          return caches.match("/kupon/");
-        }
-      })
+  // Only cache essential assets, let everything else go to network
+  const url = new URL(event.request.url);
+  const isEssentialAsset = ESSENTIAL_ASSETS.some((asset) =>
+    url.pathname.includes(asset.replace("/kupon/", ""))
   );
+
+  if (isEssentialAsset) {
+    // Cache essential assets (manifest, icons)
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        return (
+          response ||
+          fetch(event.request).then((fetchResponse) => {
+            // Cache the response for future use
+            const responseClone = fetchResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+            return fetchResponse;
+          })
+        );
+      })
+    );
+  } else {
+    // For everything else, just fetch from network without caching
+    event.respondWith(fetch(event.request));
+  }
 });
