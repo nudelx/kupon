@@ -127,6 +127,45 @@ create policy "Owners can delete groups"
   on public.groups for delete
   using (owner_id = auth.uid());
 
+-- Allow authenticated users to join groups via join code through a secure RPC
+drop function if exists public.join_group_with_code(text);
+
+create or replace function public.join_group_with_code(join_code_input text)
+returns public.groups
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  target_group public.groups;
+  current_user_id uuid;
+begin
+  current_user_id := auth.uid();
+
+  if current_user_id is null then
+    raise exception 'Not authenticated' using errcode = 'P0001';
+  end if;
+
+  select *
+    into target_group
+    from public.groups
+   where join_code = join_code_input
+   limit 1;
+
+  if target_group.id is null then
+    raise exception 'Invalid join code' using errcode = 'P0002';
+  end if;
+
+  insert into public.group_members (group_id, user_id, role)
+  values (target_group.id, current_user_id, 'member')
+  on conflict (group_id, user_id) do nothing;
+
+  return target_group;
+end;
+$$;
+
+grant execute on function public.join_group_with_code(text) to authenticated;
+
 -- Group members policies
 drop policy if exists "Read only your memberships" on public.group_members;
 drop policy if exists "Join groups yourself" on public.group_members;

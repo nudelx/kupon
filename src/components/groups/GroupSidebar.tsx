@@ -4,7 +4,7 @@ import { useCreateGroup, useGroups, useJoinGroup, useLeaveGroup } from '@/hooks/
 import { ROUTES, buildGroupPath } from '@/routes/paths';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-  `${isActive ? 'active ' : ''}btn-mobile justify-start`;
+  `${isActive ? 'active ' : ''}btn-mobile justify-start flex items-center gap-2`;
 
 export const GroupSidebar = () => {
   const { data: groups, isLoading } = useGroups();
@@ -51,6 +51,7 @@ export const GroupSidebar = () => {
       setMessage(`Joined ${joined.name}.`);
       setJoinCode('');
     } catch (err) {
+      console.error(err);
       setError(err instanceof Error ? err.message : 'Unable to join group.');
     }
   };
@@ -64,6 +65,16 @@ export const GroupSidebar = () => {
       setMessage(`You left ${name}.`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to leave group.');
+    }
+  };
+
+  const handleCopyJoinCode = async (code: string, name: string) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setMessage(`Join code for ${name} copied.`);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to copy join code.');
     }
   };
 
@@ -140,17 +151,34 @@ export const GroupSidebar = () => {
 
         {groups?.map((group) => (
           <li key={group.id}>
-            <NavLink to={buildGroupPath(group.id)} className={navLinkClass}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-              {group.name}
-            </NavLink>
+            <div className="flex items-center justify-between gap-2">
+              <NavLink to={buildGroupPath(group.id)} className={navLinkClass}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+                {group.name}
+              </NavLink>
+              <button
+                type="button"
+                className="btn btn-ghost btn-xs touch-target"
+                onClick={() => handleCopyJoinCode(group.join_code, group.name)}
+                aria-label={`Copy join code for ${group.name}`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                </svg>
+              </button>
+            </div>
           </li>
         ))}
 

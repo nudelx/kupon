@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
+import type { PostgrestError } from '@supabase/supabase-js';
 import { createJoinCode } from '@/utils/id';
 import type { GroupRecord } from '@/types/group';
 
@@ -59,22 +60,25 @@ export const createGroup = async ({ name, ownerId }: { name: string; ownerId: st
 };
 
 export const joinGroupWithCode = async ({ code, userId }: { code: string; userId: string }) => {
-  const { data, error } = await supabase
-    .from('groups')
-    .select('id, name, owner_id, join_code, created_at')
-    .eq('join_code', code)
-    .single();
+  if (!userId) {
+    throw new Error('You must be signed in to join a group.');
+  }
+
+  const { data, error } = await supabase.rpc('join_group_with_code', { join_code_input: code });
 
   if (error) {
+    const postgrestError = error as PostgrestError | null;
+    if (postgrestError?.code === 'P0002') {
+      throw new Error('We could not find a group with that join code.');
+    }
+    if (postgrestError?.code === 'P0001') {
+      throw new Error('You must be signed in to join a group.');
+    }
     throw error;
   }
 
-  const { error: membershipError } = await supabase
-    .from('group_members')
-    .upsert({ group_id: data.id, user_id: userId, role: 'member' }, { onConflict: 'group_id,user_id' });
-
-  if (membershipError) {
-    throw membershipError;
+  if (!data) {
+    throw new Error('Unable to join group with the provided code.');
   }
 
   return data as GroupRecord;
