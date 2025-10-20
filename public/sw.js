@@ -1,7 +1,7 @@
 // Service worker for Kupon PWA - Version-based caching strategy
 
 // Version from package.json - update this when you want to force cache refresh
-const APP_VERSION = "0.0.3";
+const APP_VERSION = "0.0.4";
 const CACHE_NAME = `kupon-essential-v${APP_VERSION}`;
 const ESSENTIAL_ASSETS = [
   "/kupon/manifest.webmanifest",

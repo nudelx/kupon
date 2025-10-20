@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { AuthGate } from '@/components/auth/AuthGate';
 import { AppHeader } from '@/components/AppHeader';
 import { GroupSidebar } from '@/components/groups/GroupSidebar';
+import { PWAInstallButton } from '@/components/PWAInstallButton';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
 export const RootLayout = () => {
@@ -22,6 +23,9 @@ export const RootLayout = () => {
               <GroupSidebar />
             </div>
           </div>
+          
+          {/* PWA Install Button */}
+          <PWAInstallButton />
         </div>
       </AuthGate>
     </ThemeProvider>
