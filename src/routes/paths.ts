@@ -4,7 +4,7 @@
  */
 
 const getBasePath = () => {
-  return "/kupon/";
+  return "/kupon";
 };
 
 export const ROUTES = {
